@@ -25,18 +25,25 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Search Bar (Placeholder) */}
+          {/* Search Bar */}
           <div className="flex-1 max-w-lg mx-8 hidden md:block">
-            <div className="relative">
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const query = e.target.search.value;
+              if (query.trim()) {
+                navigate(`/products?q=${encodeURIComponent(query)}`);
+              }
+            }} className="relative">
               <input
                 type="text"
+                name="search"
                 placeholder="Search products, brands and categories..."
                 className="w-full bg-gray-100 rounded-md py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
-              <button className="absolute right-0 top-0 mt-2 mr-3 text-gray-500">
+              <button type="submit" className="absolute right-0 top-0 mt-2 mr-3 text-gray-500 hover:text-primary-600">
                 <FiSearch size={20} />
               </button>
-            </div>
+            </form>
           </div>
 
           {/* Navigation/Icons */}
