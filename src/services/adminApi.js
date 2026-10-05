@@ -30,6 +30,22 @@ const adminApi = {
     const response = await api.get(`/admin/sellers/${id}`);
     return response.data;
   },
+  blockSeller: async (id, data) => {
+    const response = await api.patch(`/admin/sellers/${id}/block`, data);
+    return response.data;
+  },
+  unblockSeller: async (id) => {
+    const response = await api.patch(`/admin/sellers/${id}/unblock`);
+    return response.data;
+  },
+  suspendSeller: async (id, data) => {
+    const response = await api.patch(`/admin/sellers/${id}/suspend`, data);
+    return response.data;
+  },
+  reactivateSeller: async (id) => {
+    const response = await api.patch(`/admin/sellers/${id}/reactivate`);
+    return response.data;
+  },
 
   // Seller Applications
   getSellerApplications: async (params) => {
@@ -48,6 +64,10 @@ const adminApi = {
   // Categories
   getCategories: async () => {
     const response = await api.get('/admin/categories');
+    return response.data;
+  },
+  getCategoryById: async (id) => {
+    const response = await api.get(`/admin/categories/${id}`);
     return response.data;
   },
   createCategory: async (data) => {
@@ -86,20 +106,36 @@ const adminApi = {
     const response = await api.get(`/admin/orders/${id}`);
     return response.data;
   },
+  updateOrderStatus: async (id, data) => {
+    const response = await api.patch(`/admin/orders/${id}/status`, data);
+    return response.data;
+  },
 
   // Returns
   getTransforms: async (params) => {
     const response = await api.get('/admin/returns', { params });
     return response.data;
   },
+  getReturnById: async (id) => {
+    const response = await api.get(`/admin/returns/${id}`);
+    return response.data;
+  },
   approveReturn: async (id) => {
     const response = await api.patch(`/admin/returns/${id}/approve`);
     return response.data;
   },
+  rejectReturn: async (id, data) => {
+    const response = await api.patch(`/admin/returns/${id}/reject`, data);
+    return response.data;
+  },
+  processReturnRefund: async (id, data) => {
+    const response = await api.patch(`/admin/returns/${id}/refund`, data);
+    return response.data;
+  },
 
   // Finance
-  getFinanceOverview: async () => {
-    const response = await api.get('/admin/finance/overview');
+  getFinanceOverview: async (params) => {
+    const response = await api.get('/admin/finance/summary', { params });
     return response.data;
   },
 
@@ -113,7 +149,37 @@ const adminApi = {
   getAnalyticsOverview: async () => {
     const response = await api.get('/admin/analytics/overview');
     return response.data;
-  }
+  },
+  
+  // Support
+  getSupportStats: async () => {
+    const response = await api.get('/admin/support/stats');
+    return response.data;
+  },
+  getSupportTickets: async (params) => {
+    const response = await api.get('/admin/support/tickets', { params });
+    return response.data;
+  },
+  getSupportTicket: async (id) => {
+    const response = await api.get(`/admin/support/tickets/${id}`);
+    return response.data;
+  },
+  addSupportMessage: async (id, data) => {
+    const response = await api.post(`/admin/support/tickets/${id}/messages`, data);
+    return response.data;
+  },
+  changeSupportStatus: async (id, data) => {
+    const response = await api.patch(`/admin/support/tickets/${id}/status`, data);
+    return response.data;
+  },
+  assignSupportTicket: async (id, data) => {
+    const response = await api.patch(`/admin/support/tickets/${id}/assign`, data);
+    return response.data;
+  },
+  escalateSupportTicket: async (id, data) => {
+    const response = await api.patch(`/admin/support/tickets/${id}/escalate`, data);
+    return response.data;
+  },
 };
 
 export default adminApi;
