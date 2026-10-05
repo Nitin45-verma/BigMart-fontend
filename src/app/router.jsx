@@ -34,6 +34,14 @@ import SellerInventory from '../pages/seller/Inventory';
 import SellerAnalytics from '../pages/seller/Analytics';
 import SellerWallet from '../pages/seller/Wallet';
 
+import AdminLayout from '../pages/admin/AdminLayout';
+import AdminDashboard from '../pages/admin/Dashboard';
+import AdminUsers from '../pages/admin/Users';
+import AdminProducts from '../pages/admin/Products';
+import AdminSellerApplications from '../pages/admin/SellerApplications';
+import AdminOrders from '../pages/admin/Orders';
+import AdminFinance from '../pages/admin/Finance';
+
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
   <div className="flex items-center justify-center min-h-[50vh]">
@@ -105,10 +113,19 @@ export const router = createBrowserRouter([
   // Admin Routes
   {
     path: '/admin',
-    element: <Placeholder title="Admin Layout" />,
+    element: <ProtectedRoute><RoleRoute allowedRoles={['admin']}><AdminLayout /></RoleRoute></ProtectedRoute>,
     children: [
-      { index: true, element: <Placeholder title="Admin Dashboard" /> },
-      { path: 'users', element: <Placeholder title="Manage Users" /> },
+      { index: true, element: <AdminDashboard /> },
+      { path: 'users', element: <AdminUsers /> },
+      { path: 'sellers', element: <Placeholder title="Manage Sellers" /> },
+      { path: 'seller-applications', element: <AdminSellerApplications /> },
+      { path: 'categories', element: <Placeholder title="Manage Categories" /> },
+      { path: 'products', element: <AdminProducts /> },
+      { path: 'orders', element: <AdminOrders /> },
+      { path: 'returns', element: <Placeholder title="Manage Returns" /> },
+      { path: 'finance', element: <AdminFinance /> },
+      { path: 'analytics', element: <Placeholder title="Analytics" /> },
+      { path: 'audit-logs', element: <Placeholder title="Audit Logs" /> },
     ],
   },
 ]);
