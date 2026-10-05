@@ -24,6 +24,16 @@ import Profile from '../pages/customer/account/Profile';
 import Orders from '../pages/customer/account/Orders';
 import OrderDetails from '../pages/customer/account/OrderDetails';
 
+import SellerLayout from '../pages/seller/SellerLayout';
+import SellerDashboard from '../pages/seller/Dashboard';
+import SellerProducts from '../pages/seller/Products';
+import SellerProductForm from '../pages/seller/ProductForm';
+import SellerOrders from '../pages/seller/Orders';
+import SellerOrderDetails from '../pages/seller/OrderDetails';
+import SellerInventory from '../pages/seller/Inventory';
+import SellerAnalytics from '../pages/seller/Analytics';
+import SellerWallet from '../pages/seller/Wallet';
+
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
   <div className="flex items-center justify-center min-h-[50vh]">
@@ -79,11 +89,17 @@ export const router = createBrowserRouter([
   // Seller Routes
   {
     path: '/seller',
-    element: <Placeholder title="Seller Layout" />,
+    element: <ProtectedRoute><RoleRoute allowedRoles={['seller']}><SellerLayout /></RoleRoute></ProtectedRoute>,
     children: [
-      { index: true, element: <Placeholder title="Seller Dashboard" /> },
-      { path: 'products', element: <Placeholder title="Seller Products" /> },
-      { path: 'orders', element: <Placeholder title="Seller Orders" /> },
+      { index: true, element: <SellerDashboard /> },
+      { path: 'products', element: <SellerProducts /> },
+      { path: 'products/new', element: <SellerProductForm /> },
+      { path: 'products/:productId/edit', element: <SellerProductForm /> },
+      { path: 'inventory', element: <SellerInventory /> },
+      { path: 'orders', element: <SellerOrders /> },
+      { path: 'orders/:orderId', element: <SellerOrderDetails /> },
+      { path: 'wallet', element: <SellerWallet /> },
+      { path: 'analytics', element: <SellerAnalytics /> },
     ],
   },
   // Admin Routes
