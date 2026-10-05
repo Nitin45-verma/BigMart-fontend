@@ -1,12 +1,19 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
-// Note: This is a structural placeholder.
-// The real role checking logic will be hooked up in future steps via Redux.
 const RoleRoute = ({ children, allowedRoles }) => {
-  const userRole = localStorage.getItem('role') || 'customer'; // Dummy check
+  const { user, isInitializing } = useSelector((state) => state.auth);
 
-  if (!allowedRoles.includes(userRole)) {
+  if (isInitializing) {
+    return (
+      <div className="flex justify-center items-center h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (!user || !allowedRoles.includes(user.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

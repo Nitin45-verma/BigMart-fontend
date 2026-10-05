@@ -8,28 +8,30 @@ const api = axios.create({
   withCredentials: true,
 });
 
-api.interceptors.request.use(
-  (config) => {
-    // Add auth token if available in local storage
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+export const setupInterceptors = (store) => {
+  api.interceptors.request.use(
+    (config) => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear token and handle unauthorized access
-      localStorage.removeItem('token');
-      // window.location.href = '/login'; // Optional: Redirect to login
+  api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        // Safe check to prevent infinite loops if the /me endpoint itself is 401
+        if (error.config.url !== '/auth/me') {
+          store.dispatch({ type: 'auth/forceLogout' });
+        }
+      }
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+};
 
 export default api;

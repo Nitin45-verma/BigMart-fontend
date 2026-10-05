@@ -3,6 +3,11 @@ import { createBrowserRouter } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import Home from '../pages/Home';
 
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
+import VerifyEmail from '../pages/auth/VerifyEmail';
+import OAuthSuccess from '../pages/auth/OAuthSuccess';
+
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
   <div className="flex items-center justify-center min-h-[50vh]">
@@ -19,9 +24,10 @@ export const router = createBrowserRouter([
       { path: 'products', element: <Placeholder title="Products Catalog" /> },
       { path: 'products/:slug', element: <Placeholder title="Product Details" /> },
       { path: 'categories/:slug', element: <Placeholder title="Category Products" /> },
-      { path: 'login', element: <Placeholder title="Login Page" /> },
-      { path: 'register', element: <Placeholder title="Register Page" /> },
-      { path: 'verify-email', element: <Placeholder title="Verify Email" /> },
+      { path: 'login', element: <Login /> },
+      { path: 'register', element: <Register /> },
+      { path: 'verify-email', element: <VerifyEmail /> },
+      { path: 'oauth/success', element: <OAuthSuccess /> },
       { path: 'cart', element: <Placeholder title="Shopping Cart" /> },
       // Customer Routes
       {
