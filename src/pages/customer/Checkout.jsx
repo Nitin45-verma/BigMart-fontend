@@ -6,27 +6,35 @@ import { selectCheckoutAddress } from '../../features/address/addressSlice';
 import { getShippingQuote } from '../../features/shipping/shippingThunks';
 import { invalidateShippingQuote } from '../../features/shipping/shippingSlice';
 import { validateCoupon } from '../../features/coupon/couponThunks';
+import { createOrder, verifyPayment } from '../../features/checkout/checkoutThunks';
+import { setPaymentStatus, resetCheckout } from '../../features/checkout/checkoutSlice';
 import AddressCard from '../../components/address/AddressCard';
 import AddressForm from '../../components/address/AddressForm';
 import CouponBox from '../../components/checkout/CouponBox';
 import CheckoutSummary from '../../components/checkout/CheckoutSummary';
 import { FiMapPin, FiTruck, FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { useToast } from '../../context/ToastContext';
-
-// We import fetchAddresses from addressThunks properly
 import { fetchAddresses as fetchAddressesThunk, createAddress as createAddressThunk } from '../../features/address/addressThunks';
+import { loadRazorpayScript } from '../../utils/razorpay';
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { addToast } = useToast();
   
+  const { user, isAuthenticated, isInitializing } = useSelector((state) => state.auth);
   const { items, cartTotal, loading: cartLoading } = useSelector((state) => state.cart);
-  const { isAuthenticated, isInitializing } = useSelector((state) => state.auth);
-  
   const { addresses, selectedAddressId, loading: addressLoading, error: addressError } = useSelector((state) => state.address);
   const { quote, error: shippingError } = useSelector((state) => state.shipping);
   const { appliedCoupon } = useSelector((state) => state.coupon);
+  
+  const { 
+    orderCreationLoading, 
+    verificationLoading, 
+    createdOrder, 
+    paymentStatus, 
+    successOrderId 
+  } = useSelector((state) => state.checkout);
 
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
@@ -45,6 +53,7 @@ const Checkout = () => {
     if (isAuthenticated) {
       dispatch(fetchCart());
       dispatch(fetchAddressesThunk());
+      dispatch(resetCheckout());
     }
   }, [dispatch, isAuthenticated]);
 
@@ -63,12 +72,9 @@ const Checkout = () => {
       prevCartTotalRef.current !== undefined &&
       (prevCartTotalRef.current !== cartTotal || prevItemsLengthRef.current !== items.length)
     ) {
-      // Cart changed! Invalidate shipping and re-fetch if address selected
       if (selectedAddressId) {
         dispatch(getShippingQuote(selectedAddressId));
       }
-      
-      // Re-validate coupon if applied
       if (appliedCoupon) {
         dispatch(validateCoupon(appliedCoupon.code));
       }
@@ -92,10 +98,91 @@ const Checkout = () => {
     }
   };
 
-  const handleContinueToPayment = () => {
-    // Payment integration is Step 7
-    addToast('Payment integration will be implemented in Step 7', 'info');
+  // ── PAYMENT FLOW ──
+  
+  useEffect(() => {
+    if (paymentStatus === 'success' && successOrderId) {
+      addToast('Payment successful!', 'success');
+      navigate(`/order-success/${successOrderId}`);
+    }
+  }, [paymentStatus, successOrderId, navigate, addToast]);
+
+  const handleContinueToPayment = async () => {
+    if (!selectedAddressId) {
+      addToast('Please select a shipping address', 'error');
+      return;
+    }
+    
+    try {
+      const orderPayload = {
+        addressId: selectedAddressId,
+        couponCode: appliedCoupon ? appliedCoupon.code : undefined
+      };
+      
+      const response = await dispatch(createOrder(orderPayload)).unwrap();
+      
+      // Load script
+      const res = await loadRazorpayScript();
+      if (!res) {
+        addToast('Razorpay SDK failed to load. Are you online?', 'error');
+        dispatch(setPaymentStatus('failed'));
+        return;
+      }
+      
+      const options = {
+        key: response.keyId,
+        amount: response.amountPaise,
+        currency: response.currency,
+        name: 'BigMart',
+        description: `Order ${response.orderNumber}`,
+        order_id: response.razorpayOrderId,
+        handler: async function (handlerResponse) {
+          try {
+            await dispatch(verifyPayment({
+              razorpay_order_id: handlerResponse.razorpay_order_id,
+              razorpay_payment_id: handlerResponse.razorpay_payment_id,
+              razorpay_signature: handlerResponse.razorpay_signature
+            })).unwrap();
+            
+            // On success, useEffect takes over and redirects
+          } catch (verifyErr) {
+            addToast(verifyErr || 'Payment verification failed', 'error');
+            dispatch(setPaymentStatus('failed'));
+          }
+        },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: '' 
+        },
+        theme: {
+          color: '#4f46e5'
+        },
+        modal: {
+          ondismiss: function() {
+            addToast('Payment cancelled', 'info');
+            dispatch(setPaymentStatus('failed'));
+          }
+        }
+      };
+
+      dispatch(setPaymentStatus('open'));
+      const paymentObject = new window.Razorpay(options);
+      
+      paymentObject.on('payment.failed', function (response) {
+        addToast(`Payment failed: ${response.error.description}`, 'error');
+        dispatch(setPaymentStatus('failed'));
+      });
+      
+      paymentObject.open();
+
+    } catch (err) {
+      addToast(err || 'Failed to initialize payment', 'error');
+      dispatch(setPaymentStatus('failed'));
+    }
   };
+
+  const isCheckoutDisabled = orderCreationLoading || paymentStatus === 'initializing' || paymentStatus === 'open' || verificationLoading;
 
   if (isInitializing || !isAuthenticated) return null;
 
@@ -155,7 +242,7 @@ const Checkout = () => {
         )}
 
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-12 lg:items-start">
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-6 opacity-100 transition-opacity" style={{ opacity: isCheckoutDisabled ? 0.6 : 1, pointerEvents: isCheckoutDisabled ? 'none' : 'auto' }}>
             
             {/* Address Selection Section */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -209,7 +296,6 @@ const Checkout = () => {
                         isSelected={selectedAddressId === address._id}
                         onSelect={handleAddressSelect}
                         selectable={true}
-                        // Hide edit/delete in checkout flow for simplicity, or provide a link to address management
                         onEdit={() => navigate('/account/addresses')}
                         onDelete={() => navigate('/account/addresses')}
                       />
@@ -278,8 +364,23 @@ const Checkout = () => {
           <div className="lg:col-span-4 mt-8 lg:mt-0">
             <CheckoutSummary 
               onContinue={handleContinueToPayment}
-              isValidating={isValidating}
+              isValidating={isCheckoutDisabled}
             />
+            {verificationLoading && (
+              <div className="mt-4 text-center text-sm font-medium text-primary-600 animate-pulse">
+                Verifying your secure payment...
+              </div>
+            )}
+            {orderCreationLoading && (
+              <div className="mt-4 text-center text-sm font-medium text-primary-600 animate-pulse">
+                Preparing secure payment...
+              </div>
+            )}
+            <div className="mt-4 p-4 border border-gray-200 rounded-md bg-white">
+               <p className="text-xs text-gray-500 text-center">
+                 Your payment is securely processed by Razorpay. Do not refresh the page during checkout.
+               </p>
+            </div>
           </div>
         </div>
       </div>

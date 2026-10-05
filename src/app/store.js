@@ -6,6 +6,7 @@ import wishlistReducer from '../features/wishlist/wishlistSlice';
 import addressReducer from '../features/address/addressSlice';
 import shippingReducer from '../features/shipping/shippingSlice';
 import couponReducer from '../features/coupon/couponSlice';
+import checkoutReducer from '../features/checkout/checkoutSlice';
 
 export const store = configureStore({
   reducer: {
@@ -16,5 +17,6 @@ export const store = configureStore({
     address: addressReducer,
     shipping: shippingReducer,
     coupon: couponReducer,
+    checkout: checkoutReducer,
   },
 });

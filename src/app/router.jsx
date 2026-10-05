@@ -1,5 +1,5 @@
 import React from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Outlet } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import Home from '../pages/Home';
 
@@ -14,6 +14,15 @@ import Cart from '../pages/customer/Cart';
 import Wishlist from '../pages/customer/Wishlist';
 import AddressManagement from '../pages/customer/AddressManagement';
 import Checkout from '../pages/customer/Checkout';
+import OrderSuccess from '../pages/customer/OrderSuccess';
+
+import ProtectedRoute from '../components/common/ProtectedRoute';
+import RoleRoute from '../components/common/RoleRoute';
+
+import AccountDashboard from '../pages/customer/account/AccountDashboard';
+import Profile from '../pages/customer/account/Profile';
+import Orders from '../pages/customer/account/Orders';
+import OrderDetails from '../pages/customer/account/OrderDetails';
 
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
@@ -35,21 +44,36 @@ export const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'oauth/success', element: <OAuthSuccess /> },
-      { path: 'cart', element: <ProtectedRoute allowedRoles={['customer']}><Cart /></ProtectedRoute> },
-      { path: 'checkout', element: <ProtectedRoute allowedRoles={['customer']}><Checkout /></ProtectedRoute> },
+      { 
+        path: 'cart', 
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Cart /></RoleRoute></ProtectedRoute> 
+      },
+      { 
+        path: 'checkout', 
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Checkout /></RoleRoute></ProtectedRoute> 
+      },
+      { 
+        path: 'order-success/:orderId', 
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><OrderSuccess /></RoleRoute></ProtectedRoute> 
+      },
       // Customer Routes
       {
         path: 'account',
-        element: <ProtectedRoute allowedRoles={['customer']} />,
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Outlet /></RoleRoute></ProtectedRoute>,
         children: [
-          { index: true, element: <Placeholder title="My Account" /> },
-          { path: 'orders', element: <Placeholder title="My Orders" /> },
+          { index: true, element: <AccountDashboard /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'orders', element: <Orders /> },
+          { path: 'orders/:orderId', element: <OrderDetails /> },
           { path: 'wishlist', element: <Wishlist /> },
           { path: 'addresses', element: <AddressManagement /> },
         ],
       },
       // Keep legacy /wishlist route at root level for easy access if needed, or redirect
-      { path: 'wishlist', element: <ProtectedRoute allowedRoles={['customer']}><Wishlist /></ProtectedRoute> },
+      { 
+        path: 'wishlist', 
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Wishlist /></RoleRoute></ProtectedRoute> 
+      },
     ],
   },
   // Seller Routes
