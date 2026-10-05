@@ -10,6 +10,9 @@ import OAuthSuccess from '../pages/auth/OAuthSuccess';
 import Catalog from '../pages/Catalog';
 import ProductDetail from '../pages/ProductDetail';
 
+import Cart from '../pages/customer/Cart';
+import Wishlist from '../pages/customer/Wishlist';
+
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
   <div className="flex items-center justify-center min-h-[50vh]">
@@ -30,16 +33,19 @@ export const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'oauth/success', element: <OAuthSuccess /> },
-      { path: 'cart', element: <Placeholder title="Shopping Cart" /> },
+      { path: 'cart', element: <ProtectedRoute allowedRoles={['customer']}><Cart /></ProtectedRoute> },
       // Customer Routes
       {
         path: 'account',
+        element: <ProtectedRoute allowedRoles={['customer']} />,
         children: [
           { index: true, element: <Placeholder title="My Account" /> },
           { path: 'orders', element: <Placeholder title="My Orders" /> },
-          { path: 'wishlist', element: <Placeholder title="My Wishlist" /> },
+          { path: 'wishlist', element: <Wishlist /> },
         ],
       },
+      // Keep legacy /wishlist route at root level for easy access if needed, or redirect
+      { path: 'wishlist', element: <ProtectedRoute allowedRoles={['customer']}><Wishlist /></ProtectedRoute> },
     ],
   },
   // Seller Routes

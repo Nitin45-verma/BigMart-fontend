@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiSearch, FiShoppingCart, FiHeart, FiUser, FiLogOut } from 'react-icons/fi';
 import { logoutUser } from '../../features/auth/authThunks';
+import { fetchCart } from '../../features/cart/cartThunks';
+import { fetchWishlistCount } from '../../features/wishlist/wishlistThunks';
 
 const Header = () => {
   const { isAuthenticated, user, isInitializing } = useSelector((state) => state.auth);
+  const { itemCount: cartCount } = useSelector((state) => state.cart);
+  const { count: wishlistCount } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'customer') {
+      dispatch(fetchCart());
+      dispatch(fetchWishlistCount());
+    }
+  }, [dispatch, isAuthenticated, user?.role]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -66,8 +77,13 @@ const Header = () => {
                 </div>
                 {user.role === 'customer' && (
                   <>
-                    <Link to="/account/wishlist" className="text-gray-600 hover:text-primary-600">
+                    <Link to="/wishlist" className="text-gray-600 hover:text-primary-600 relative">
                       <FiHeart size={22} />
+                      {wishlistCount > 0 && (
+                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                          {wishlistCount}
+                        </span>
+                      )}
                     </Link>
                     <Link to="/account" className="text-gray-600 hover:text-primary-600">
                       <FiUser size={22} />
@@ -92,9 +108,11 @@ const Header = () => {
 
             <Link to="/cart" className="text-gray-600 hover:text-primary-600 relative">
               <FiShoppingCart size={22} />
-              <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>

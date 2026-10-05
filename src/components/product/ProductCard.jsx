@@ -5,11 +5,14 @@ import { useDispatch, useSelector } from 'react-redux';
 // We'll dispatch real wishlist/cart thunks later when we build the cart/wishlist features, 
 // for now we'll handle the UI state or call api directly if we want, 
 // actually the prompt says "Wishlist integration - Use existing Step 19 backend wishlist APIs".
-import { wishlistApi, cartApi } from '../../services/productApi';
+import cartApi from '../../services/cartApi';
+import wishlistApi from '../../services/wishlistApi';
+import { useToast } from '../../context/ToastContext';
 
 const ProductCard = ({ product }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { addToast } = useToast();
   const [addingToCart, setAddingToCart] = useState(false);
   const [addingToWishlist, setAddingToWishlist] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -26,9 +29,9 @@ const ProductCard = ({ product }) => {
     try {
       setAddingToCart(true);
       await cartApi.addItem({ productId: product._id, quantity: 1 });
-      alert('Added to cart!'); // We can replace with a toast later
+      addToast('Added to cart!', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || 'Error adding to cart');
+      addToast(error.response?.data?.message || 'Error adding to cart', 'error');
     } finally {
       setAddingToCart(false);
     }
@@ -43,9 +46,9 @@ const ProductCard = ({ product }) => {
     try {
       setAddingToWishlist(true);
       await wishlistApi.addItem({ productId: product._id });
-      alert('Added to wishlist!');
+      addToast('Added to wishlist!', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || 'Error adding to wishlist');
+      addToast(error.response?.data?.message || 'Error adding to wishlist', 'error');
     } finally {
       setAddingToWishlist(false);
     }

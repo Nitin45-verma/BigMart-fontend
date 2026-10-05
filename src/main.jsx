@@ -6,12 +6,16 @@ import { setupInterceptors } from './services/api'
 import App from './App.jsx'
 import './index.css'
 
+import { ToastProvider } from './context/ToastContext'
+
 setupInterceptors(store);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Provider store={store}>
-      <App />
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </Provider>
   </StrictMode>,
 )

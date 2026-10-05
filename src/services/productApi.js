@@ -19,17 +19,3 @@ export const productApi = {
   // Reviews
   getProductReviews: (productId, params) => api.get(`/products/${productId}/reviews`, { params }),
 };
-
-export const cartApi = {
-  getCart: () => api.get('/cart'),
-  addItem: (data) => api.post('/cart/items', data),
-  updateItem: (productId, data) => api.patch(`/cart/items/${productId}`, data),
-  removeItem: (productId) => api.delete(`/cart/items/${productId}`),
-};
-
-export const wishlistApi = {
-  getWishlist: () => api.get('/wishlist'),
-  checkStatus: (productId) => api.get(`/wishlist/check/${productId}`),
-  addItem: (data) => api.post('/wishlist/items', data),
-  removeItem: (productId) => api.delete(`/wishlist/items/${productId}`),
-};

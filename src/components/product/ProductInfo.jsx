@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiHeart, FiShoppingCart, FiStar, FiCheck, FiTruck, FiShield } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import { cartApi, wishlistApi } from '../../services/productApi';
+import cartApi from '../../services/cartApi';
+import wishlistApi from '../../services/wishlistApi';
 import QuantitySelector from './QuantitySelector';
+import { useToast } from '../../context/ToastContext';
 
 const ProductInfo = ({ product }) => {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  const { addToast } = useToast();
   
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
@@ -32,9 +35,10 @@ const ProductInfo = ({ product }) => {
       setCartSuccess(false);
       await cartApi.addItem({ productId: product._id, quantity });
       setCartSuccess(true);
+      addToast('Added to cart!', 'success');
       setTimeout(() => setCartSuccess(false), 3000);
     } catch (error) {
-      alert(error.response?.data?.message || 'Error adding to cart');
+      addToast(error.response?.data?.message || 'Error adding to cart', 'error');
     } finally {
       setAddingToCart(false);
     }
@@ -49,9 +53,9 @@ const ProductInfo = ({ product }) => {
     try {
       setAddingToWishlist(true);
       await wishlistApi.addItem({ productId: product._id });
-      alert('Added to wishlist!');
+      addToast('Added to wishlist!', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || 'Error adding to wishlist');
+      addToast(error.response?.data?.message || 'Error adding to wishlist', 'error');
     } finally {
       setAddingToWishlist(false);
     }
