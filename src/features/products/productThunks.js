@@ -59,3 +59,27 @@ export const fetchHomeRecommendations = createAsyncThunk(
     }
   }
 );
+
+export const fetchRelatedProducts = createAsyncThunk(
+  'products/fetchRelatedProducts',
+  async (productId, { rejectWithValue }) => {
+    try {
+      const response = await productApi.getRelatedProducts(productId);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch related products');
+    }
+  }
+);
+
+export const fetchProductReviews = createAsyncThunk(
+  'products/fetchProductReviews',
+  async ({ productId, params }, { rejectWithValue }) => {
+    try {
+      const response = await productApi.getProductReviews(productId, params);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch product reviews');
+    }
+  }
+);

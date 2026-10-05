@@ -14,6 +14,10 @@ export const productApi = {
   getTrending: (params) => api.get('/recommendations/trending', { params }),
   getTopRated: (params) => api.get('/recommendations/top-rated', { params }),
   getBestDeals: (params) => api.get('/recommendations/best-deals', { params }),
+  getRelatedProducts: (productId) => api.get(`/recommendations/related/${productId}`),
+
+  // Reviews
+  getProductReviews: (productId, params) => api.get(`/products/${productId}/reviews`, { params }),
 };
 
 export const cartApi = {

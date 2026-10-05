@@ -8,6 +8,7 @@ import Register from '../pages/auth/Register';
 import VerifyEmail from '../pages/auth/VerifyEmail';
 import OAuthSuccess from '../pages/auth/OAuthSuccess';
 import Catalog from '../pages/Catalog';
+import ProductDetail from '../pages/ProductDetail';
 
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
@@ -23,7 +24,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: 'products', element: <Catalog /> },
-      { path: 'products/:slug', element: <Placeholder title="Product Details" /> },
+      { path: 'products/:slug', element: <ProductDetail /> },
       { path: 'categories/:slug', element: <Placeholder title="Category Products" /> },
       { path: 'login', element: <Login /> },
       { path: 'register', element: <Register /> },

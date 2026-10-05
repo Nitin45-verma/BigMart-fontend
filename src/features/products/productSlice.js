@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchCategories, fetchProducts, fetchProductDetails, fetchHomeRecommendations } from './productThunks';
+import { fetchCategories, fetchProducts, fetchProductDetails, fetchHomeRecommendations, fetchRelatedProducts, fetchProductReviews } from './productThunks';
 
 const initialState = {
   categories: [],
@@ -26,6 +26,18 @@ const initialState = {
     bestDeals: []
   },
   homeRecsLoading: false,
+
+  relatedProducts: [],
+  relatedProductsLoading: false,
+
+  productReviews: [],
+  reviewsPagination: {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1
+  },
+  reviewsLoading: false,
 };
 
 const productSlice = createSlice({
@@ -91,6 +103,36 @@ const productSlice = createSlice({
       })
       .addCase(fetchHomeRecommendations.rejected, (state) => {
         state.homeRecsLoading = false;
+      })
+
+      // Related Products
+      .addCase(fetchRelatedProducts.pending, (state) => {
+        state.relatedProductsLoading = true;
+      })
+      .addCase(fetchRelatedProducts.fulfilled, (state, action) => {
+        state.relatedProductsLoading = false;
+        state.relatedProducts = action.payload.data.products || [];
+      })
+      .addCase(fetchRelatedProducts.rejected, (state) => {
+        state.relatedProductsLoading = false;
+      })
+
+      // Product Reviews
+      .addCase(fetchProductReviews.pending, (state) => {
+        state.reviewsLoading = true;
+      })
+      .addCase(fetchProductReviews.fulfilled, (state, action) => {
+        state.reviewsLoading = false;
+        state.productReviews = action.payload.data.reviews || [];
+        state.reviewsPagination = {
+          total: action.payload.data.total || 0,
+          page: action.payload.data.page || 1,
+          limit: action.payload.data.limit || 10,
+          totalPages: action.payload.data.totalPages || 1
+        };
+      })
+      .addCase(fetchProductReviews.rejected, (state) => {
+        state.reviewsLoading = false;
       });
   },
 });
