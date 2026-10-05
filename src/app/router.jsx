@@ -12,6 +12,8 @@ import ProductDetail from '../pages/ProductDetail';
 
 import Cart from '../pages/customer/Cart';
 import Wishlist from '../pages/customer/Wishlist';
+import AddressManagement from '../pages/customer/AddressManagement';
+import Checkout from '../pages/customer/Checkout';
 
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
@@ -34,6 +36,7 @@ export const router = createBrowserRouter([
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'oauth/success', element: <OAuthSuccess /> },
       { path: 'cart', element: <ProtectedRoute allowedRoles={['customer']}><Cart /></ProtectedRoute> },
+      { path: 'checkout', element: <ProtectedRoute allowedRoles={['customer']}><Checkout /></ProtectedRoute> },
       // Customer Routes
       {
         path: 'account',
@@ -42,6 +45,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Placeholder title="My Account" /> },
           { path: 'orders', element: <Placeholder title="My Orders" /> },
           { path: 'wishlist', element: <Wishlist /> },
+          { path: 'addresses', element: <AddressManagement /> },
         ],
       },
       // Keep legacy /wishlist route at root level for easy access if needed, or redirect

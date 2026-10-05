@@ -170,14 +170,12 @@ const Cart = () => {
                 <button
                   type="button"
                   disabled={hasUnavailableItems || items.length === 0}
+                  onClick={() => navigate('/checkout')}
                   className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                 >
                   <FiLock className="mr-2 -ml-1 h-5 w-5" aria-hidden="true" />
                   Proceed to Checkout
                 </button>
-                <p className="mt-2 text-xs text-center text-gray-500">
-                  Checkout functionality will be implemented in a future step.
-                </p>
               </div>
             </div>
           </div>
