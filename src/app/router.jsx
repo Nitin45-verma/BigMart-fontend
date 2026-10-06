@@ -37,10 +37,19 @@ import SellerWallet from '../pages/seller/Wallet';
 import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/Dashboard';
 import AdminUsers from '../pages/admin/Users';
+import AdminSellers from '../pages/admin/Sellers';
+import AdminCategories from '../pages/admin/Categories';
 import AdminProducts from '../pages/admin/Products';
 import AdminSellerApplications from '../pages/admin/SellerApplications';
 import AdminOrders from '../pages/admin/Orders';
+import AdminOrderDetails from '../pages/admin/OrderDetails';
+import AdminReturns from '../pages/admin/Returns';
 import AdminFinance from '../pages/admin/Finance';
+import AdminAnalytics from '../pages/admin/Analytics';
+import AdminAuditLogs from '../pages/admin/AuditLogs';
+import AdminSupportDashboard from '../pages/admin/SupportDashboard';
+import AdminSupportTickets from '../pages/admin/SupportTickets';
+import AdminSupportTicketDetails from '../pages/admin/SupportTicketDetails';
 
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
@@ -117,15 +126,19 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <AdminDashboard /> },
       { path: 'users', element: <AdminUsers /> },
-      { path: 'sellers', element: <Placeholder title="Manage Sellers" /> },
+      { path: 'sellers', element: <AdminSellers /> },
       { path: 'seller-applications', element: <AdminSellerApplications /> },
-      { path: 'categories', element: <Placeholder title="Manage Categories" /> },
+      { path: 'categories', element: <AdminCategories /> },
       { path: 'products', element: <AdminProducts /> },
       { path: 'orders', element: <AdminOrders /> },
-      { path: 'returns', element: <Placeholder title="Manage Returns" /> },
+      { path: 'orders/:orderId', element: <AdminOrderDetails /> },
+      { path: 'returns', element: <AdminReturns /> },
       { path: 'finance', element: <AdminFinance /> },
-      { path: 'analytics', element: <Placeholder title="Analytics" /> },
-      { path: 'audit-logs', element: <Placeholder title="Audit Logs" /> },
+      { path: 'analytics', element: <AdminAnalytics /> },
+      { path: 'audit-logs', element: <AdminAuditLogs /> },
+      { path: 'support', element: <AdminSupportDashboard /> },
+      { path: 'support/tickets', element: <AdminSupportTickets /> },
+      { path: 'support/tickets/:ticketId', element: <AdminSupportTicketDetails /> },
     ],
   },
 ]);

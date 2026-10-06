@@ -5,11 +5,14 @@ import { useToast } from '../../context/ToastContext';
 const Returns = () => {
   const [returns, setReturns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rejectModalOpen, setRejectModalOpen] = useState(false);
+  const [selectedReturnId, setSelectedReturnId] = useState(null);
+  const [rejectReason, setRejectReason] = useState('');
   const { addToast } = useToast();
 
   const fetchReturns = async () => {
     try {
-      const res = await adminApi.getTransforms(); // Note: method is named getTransforms in adminApi.js mapping to /admin/returns
+      const res = await adminApi.getTransforms(); 
       setReturns(res.data.returns || res.data);
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to load returns', 'error');
@@ -33,16 +36,22 @@ const Returns = () => {
     }
   };
 
-  const handleReject = async (id) => {
-    const reason = window.prompt('Enter rejection reason:');
-    if (reason === null) return;
-    if (!reason.trim()) {
+  const openRejectModal = (id) => {
+    setSelectedReturnId(id);
+    setRejectReason('');
+    setRejectModalOpen(true);
+  };
+
+  const handleRejectSubmit = async (e) => {
+    e.preventDefault();
+    if (!rejectReason.trim()) {
       addToast('Rejection reason is required', 'error');
       return;
     }
     try {
-      await adminApi.rejectReturn(id, { reason });
+      await adminApi.rejectReturn(selectedReturnId, { reason: rejectReason });
       addToast('Return rejected', 'success');
+      setRejectModalOpen(false);
       fetchReturns();
     } catch (err) {
       addToast(err.response?.data?.message || 'Failed to reject return', 'error');
@@ -103,7 +112,7 @@ const Returns = () => {
                       {ret.status === 'pending' && (
                         <>
                           <button onClick={() => handleApprove(ret._id)} className="text-green-600 hover:text-green-900">Approve</button>
-                          <button onClick={() => handleReject(ret._id)} className="text-red-600 hover:text-red-900">Reject</button>
+                          <button onClick={() => openRejectModal(ret._id)} className="text-red-600 hover:text-red-900">Reject</button>
                         </>
                       )}
                       {ret.status === 'approved' && (
@@ -117,6 +126,33 @@ const Returns = () => {
           </table>
         </div>
       </div>
+
+      {rejectModalOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => setRejectModalOpen(false)}></div>
+            <div className="relative inline-block w-full max-w-md p-6 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
+              <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Reject Return</h3>
+              <form onSubmit={handleRejectSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Reason for Rejection *</label>
+                  <textarea 
+                    required 
+                    rows={3} 
+                    value={rejectReason} 
+                    onChange={e => setRejectReason(e.target.value)} 
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  ></textarea>
+                </div>
+                <div className="mt-5 sm:mt-6 sm:flex sm:flex-row-reverse">
+                  <button type="submit" className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">Reject Return</button>
+                  <button type="button" onClick={() => setRejectModalOpen(false)} className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">Cancel</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
