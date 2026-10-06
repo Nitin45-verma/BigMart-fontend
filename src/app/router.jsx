@@ -33,6 +33,7 @@ import SellerOrderDetails from '../pages/seller/OrderDetails';
 import SellerInventory from '../pages/seller/Inventory';
 import SellerAnalytics from '../pages/seller/Analytics';
 import SellerWallet from '../pages/seller/Wallet';
+import BecomeASeller from '../pages/seller/BecomeASeller';
 
 import AdminLayout from '../pages/admin/AdminLayout';
 import AdminDashboard from '../pages/admin/Dashboard';
@@ -50,6 +51,19 @@ import AdminAuditLogs from '../pages/admin/AuditLogs';
 import AdminSupportDashboard from '../pages/admin/SupportDashboard';
 import AdminSupportTickets from '../pages/admin/SupportTickets';
 import AdminSupportTicketDetails from '../pages/admin/SupportTicketDetails';
+
+import NotFoundPage from '../pages/NotFoundPage';
+import UnauthorizedPage from '../pages/UnauthorizedPage';
+import {
+  PrivacyPolicy,
+  TermsOfService,
+  ShippingPolicy,
+  SellerPolicies,
+  HelpCenter,
+  ContactUs,
+  ReturnsRefunds,
+  TrackOrder,
+} from '../pages/PublicPages';
 
 // Route placeholders for future features
 const Placeholder = ({ title }) => (
@@ -71,19 +85,34 @@ export const router = createBrowserRouter([
       { path: 'register', element: <Register /> },
       { path: 'verify-email', element: <VerifyEmail /> },
       { path: 'oauth/success', element: <OAuthSuccess /> },
-      { 
-        path: 'cart', 
-        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Cart /></RoleRoute></ProtectedRoute> 
+      { path: 'unauthorized', element: <UnauthorizedPage /> },
+
+      // Public / Informational routes referenced by Footer/UI
+      { path: 'privacy', element: <PrivacyPolicy /> },
+      { path: 'terms', element: <TermsOfService /> },
+      { path: 'shipping-policy', element: <ShippingPolicy /> },
+      { path: 'help', element: <HelpCenter /> },
+      { path: 'contact', element: <ContactUs /> },
+      { path: 'returns', element: <ReturnsRefunds /> },
+      { path: 'track', element: <TrackOrder /> },
+
+      // Seller onboarding (public — shows login prompt if not authenticated)
+      { path: 'seller/register', element: <BecomeASeller /> },
+      { path: 'seller/policies', element: <SellerPolicies /> },
+
+      {
+        path: 'cart',
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Cart /></RoleRoute></ProtectedRoute>,
       },
-      { 
-        path: 'checkout', 
-        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Checkout /></RoleRoute></ProtectedRoute> 
+      {
+        path: 'checkout',
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Checkout /></RoleRoute></ProtectedRoute>,
       },
-      { 
-        path: 'order-success/:orderId', 
-        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><OrderSuccess /></RoleRoute></ProtectedRoute> 
+      {
+        path: 'order-success/:orderId',
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><OrderSuccess /></RoleRoute></ProtectedRoute>,
       },
-      // Customer Routes
+      // Customer account routes
       {
         path: 'account',
         element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Outlet /></RoleRoute></ProtectedRoute>,
@@ -96,14 +125,13 @@ export const router = createBrowserRouter([
           { path: 'addresses', element: <AddressManagement /> },
         ],
       },
-      // Keep legacy /wishlist route at root level for easy access if needed, or redirect
-      { 
-        path: 'wishlist', 
-        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Wishlist /></RoleRoute></ProtectedRoute> 
+      {
+        path: 'wishlist',
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Wishlist /></RoleRoute></ProtectedRoute>,
       },
     ],
   },
-  // Seller Routes
+  // Seller Routes — requires authenticated seller role
   {
     path: '/seller',
     element: <ProtectedRoute><RoleRoute allowedRoles={['seller']}><SellerLayout /></RoleRoute></ProtectedRoute>,
@@ -119,7 +147,7 @@ export const router = createBrowserRouter([
       { path: 'analytics', element: <SellerAnalytics /> },
     ],
   },
-  // Admin Routes
+  // Admin Routes — requires authenticated admin role
   {
     path: '/admin',
     element: <ProtectedRoute><RoleRoute allowedRoles={['admin']}><AdminLayout /></RoleRoute></ProtectedRoute>,
@@ -140,5 +168,10 @@ export const router = createBrowserRouter([
       { path: 'support/tickets', element: <AdminSupportTickets /> },
       { path: 'support/tickets/:ticketId', element: <AdminSupportTicketDetails /> },
     ],
+  },
+  // Global 404 fallback — catches any URL not matched above
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);
