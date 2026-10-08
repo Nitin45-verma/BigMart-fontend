@@ -12,11 +12,14 @@ const BecomeASeller = () => {
   const [formData, setFormData] = useState({
     businessName: '',
     businessType: '',
-    gstNumber: '',
-    pan: '',
-    phone: '',
-    address: '',
-    description: '',
+    gstin: '',
+    panNumber: '',
+    contactPhone: '',
+    businessAddress: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    businessDescription: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,7 +84,7 @@ const BecomeASeller = () => {
           <div className="flex gap-3 justify-center">
             <button
               onClick={() => navigate('/login?redirect=/seller/register')}
-              className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 font-medium"
+              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium"
             >
               Login to Apply
             </button>
@@ -108,7 +111,7 @@ const BecomeASeller = () => {
                   required
                   value={formData.businessName}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="Your business or brand name"
                 />
               </div>
@@ -121,24 +124,24 @@ const BecomeASeller = () => {
                   required
                   value={formData.businessType}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="">Select type</option>
                   <option value="individual">Individual / Sole Proprietor</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="private_limited">Private Limited Company</option>
-                  <option value="public_limited">Public Limited Company</option>
-                  <option value="llp">LLP</option>
+                  <option value="small_business">Partnership</option>
+                  <option value="medium_business">Private Limited Company</option>
+                  <option value="large_business">Public Limited Company</option>
+                  <option value="enterprise">LLP</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">GST Number</label>
                 <input
                   type="text"
-                  name="gstNumber"
-                  value={formData.gstNumber}
+                  name="gstin"
+                  value={formData.gstin}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="15-digit GSTIN (optional)"
                   maxLength={15}
                 />
@@ -149,11 +152,11 @@ const BecomeASeller = () => {
                 </label>
                 <input
                   type="text"
-                  name="pan"
+                  name="panNumber"
                   required
-                  value={formData.pan}
+                  value={formData.panNumber}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="10-character PAN"
                   maxLength={10}
                 />
@@ -164,11 +167,11 @@ const BecomeASeller = () => {
                 </label>
                 <input
                   type="tel"
-                  name="phone"
+                  name="contactPhone"
                   required
-                  value={formData.phone}
+                  value={formData.contactPhone}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                   placeholder="10-digit mobile number"
                 />
               </div>
@@ -178,12 +181,55 @@ const BecomeASeller = () => {
                 </label>
                 <input
                   type="text"
-                  name="address"
+                  name="businessAddress"
                   required
-                  value={formData.address}
+                  value={formData.businessAddress}
                   onChange={handleChange}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
-                  placeholder="Full address"
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Full street address"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  City <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="city"
+                  required
+                  value={formData.city}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="City"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  State <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="state"
+                  required
+                  value={formData.state}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="State"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Postal Code (PIN) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="postalCode"
+                  required
+                  value={formData.postalCode}
+                  onChange={handleChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="6-digit PIN code"
+                  maxLength={6}
                 />
               </div>
             </div>
@@ -192,12 +238,12 @@ const BecomeASeller = () => {
                 Business Description <span className="text-red-500">*</span>
               </label>
               <textarea
-                name="description"
+                name="businessDescription"
                 required
-                value={formData.description}
+                value={formData.businessDescription}
                 onChange={handleChange}
                 rows={4}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                 placeholder="Tell us about your business and what you plan to sell..."
               />
             </div>
