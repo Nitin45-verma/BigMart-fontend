@@ -75,45 +75,61 @@ const Header = () => {
                 <div className="hidden sm:block text-sm text-gray-700 font-medium">
                   Hello, {user.name}
                 </div>
+                
                 {user.role === 'customer' && (
-                  <>
-                    <Link to="/wishlist" className="text-gray-600 hover:text-primary-600 relative">
-                      <FiHeart size={22} />
-                      {wishlistCount > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                          {wishlistCount}
-                        </span>
-                      )}
-                    </Link>
-                    <Link to="/account" className="text-gray-600 hover:text-primary-600">
-                      <FiUser size={22} />
-                    </Link>
-                  </>
-                )}
-                {user.role === 'seller' && (
-                  <Link to="/seller" className="text-primary-600 font-medium hover:text-primary-700">
-                    Seller Dashboard
+                  <Link to="/wishlist" className="text-gray-600 hover:text-primary-600 relative">
+                    <FiHeart size={22} />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {wishlistCount}
+                      </span>
+                    )}
                   </Link>
                 )}
-                {user.role === 'admin' && (
-                  <Link to="/admin" className="text-primary-600 font-medium hover:text-primary-700">
-                    Admin Panel
-                  </Link>
-                )}
-                <button onClick={handleLogout} className="text-gray-600 hover:text-red-600" title="Logout">
-                  <FiLogOut size={22} />
-                </button>
+
+                {/* Unified Account Dropdown */}
+                <div className="relative group">
+                  <button className="flex items-center text-gray-600 hover:text-primary-600 focus:outline-none">
+                    <FiUser size={22} />
+                  </button>
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block border border-gray-100">
+                    <Link to="/account/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</Link>
+                    
+                    {user.role === 'customer' && (
+                      <Link to="/account/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Orders</Link>
+                    )}
+
+                    {user.role === 'seller' && (
+                      <>
+                        <Link to="/seller" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Seller Dashboard</Link>
+                        <Link to="/seller/products/new" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Add Product</Link>
+                        <Link to="/seller/products" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Products</Link>
+                        <Link to="/seller/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Seller Orders</Link>
+                      </>
+                    )}
+
+                    {user.role === 'admin' && (
+                      <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Admin Dashboard</Link>
+                    )}
+                    
+                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 border-t border-gray-100 mt-1">
+                      Logout
+                    </button>
+                  </div>
+                </div>
               </>
             )}
 
-            <Link to="/cart" className="text-gray-600 hover:text-primary-600 relative">
-              <FiShoppingCart size={22} />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {(!isAuthenticated || (isAuthenticated && user?.role === 'customer')) && (
+              <Link to="/cart" className="text-gray-600 hover:text-primary-600 relative">
+                <FiShoppingCart size={22} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
           </div>
         </div>
       </div>

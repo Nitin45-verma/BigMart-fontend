@@ -112,10 +112,9 @@ export const router = createBrowserRouter([
         path: 'order-success/:orderId',
         element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><OrderSuccess /></RoleRoute></ProtectedRoute>,
       },
-      // Customer account routes
       {
         path: 'account',
-        element: <ProtectedRoute><RoleRoute allowedRoles={['customer']}><Outlet /></RoleRoute></ProtectedRoute>,
+        element: <ProtectedRoute><RoleRoute allowedRoles={['customer', 'seller']}><Outlet /></RoleRoute></ProtectedRoute>,
         children: [
           { index: true, element: <AccountDashboard /> },
           { path: 'profile', element: <Profile /> },
