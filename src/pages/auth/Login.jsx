@@ -166,7 +166,7 @@ const Login = () => {
             <p>
               Don't have an account?{' '}
               <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
-                Create one free
+                Register
               </Link>
             </p>
           </div>
@@ -184,7 +184,7 @@ const Login = () => {
             to="/seller/register"
             className="inline-block text-sm font-semibold text-amber-800 border border-amber-400 bg-white rounded-lg px-4 py-2 hover:bg-amber-100 transition"
           >
-            Become a Seller →
+            Become a Seller
           </Link>
         </div>
 
