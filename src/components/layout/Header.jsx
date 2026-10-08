@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiSearch, FiShoppingCart, FiHeart, FiUser, FiLogOut } from 'react-icons/fi';
@@ -12,6 +12,18 @@ const Header = () => {
   const { count: wishlistCount } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && user?.role === 'customer') {
@@ -88,34 +100,40 @@ const Header = () => {
                 )}
 
                 {/* Unified Account Dropdown */}
-                <div className="relative group">
-                  <button className="flex items-center text-gray-600 hover:text-primary-600 focus:outline-none">
+                <div className="relative" ref={dropdownRef}>
+                  <button 
+                    onClick={() => setDropdownOpen(!dropdownOpen)} 
+                    className="flex items-center text-gray-600 hover:text-primary-600 focus:outline-none"
+                  >
                     <FiUser size={22} />
                   </button>
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 hidden group-hover:block border border-gray-100">
-                    <Link to="/account/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</Link>
-                    
-                    {user.role === 'customer' && (
-                      <Link to="/account/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Orders</Link>
-                    )}
+                  
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100">
+                      <Link onClick={() => setDropdownOpen(false)} to="/account/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Account</Link>
+                      
+                      {user.role === 'customer' && (
+                        <Link onClick={() => setDropdownOpen(false)} to="/account/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Orders</Link>
+                      )}
 
-                    {user.role === 'seller' && (
-                      <>
-                        <Link to="/seller" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Seller Dashboard</Link>
-                        <Link to="/seller/products/new" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Add Product</Link>
-                        <Link to="/seller/products" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Products</Link>
-                        <Link to="/seller/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Seller Orders</Link>
-                      </>
-                    )}
+                      {user.role === 'seller' && (
+                        <>
+                          <Link onClick={() => setDropdownOpen(false)} to="/seller" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Seller Dashboard</Link>
+                          <Link onClick={() => setDropdownOpen(false)} to="/seller/products/new" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Add Product</Link>
+                          <Link onClick={() => setDropdownOpen(false)} to="/seller/products" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">My Products</Link>
+                          <Link onClick={() => setDropdownOpen(false)} to="/seller/orders" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Seller Orders</Link>
+                        </>
+                      )}
 
-                    {user.role === 'admin' && (
-                      <Link to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Admin Dashboard</Link>
-                    )}
-                    
-                    <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 border-t border-gray-100 mt-1">
-                      Logout
-                    </button>
-                  </div>
+                      {user.role === 'admin' && (
+                        <Link onClick={() => setDropdownOpen(false)} to="/admin" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-medium text-primary-600">Admin Dashboard</Link>
+                      )}
+                      
+                      <button onClick={() => { setDropdownOpen(false); handleLogout(); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-red-600 border-t border-gray-100 mt-1">
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               </>
             )}

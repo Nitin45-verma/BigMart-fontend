@@ -70,8 +70,8 @@ const SellerLayout = () => {
                   {user?.name?.charAt(0) || 'S'}
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900 line-clamp-1">{user?.businessName || user?.name || 'Seller'}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.status === 'approved' ? 'Active' : user?.status}</p>
+                  <p className="text-sm font-medium text-gray-900 line-clamp-1">{user?.name || 'Seller'}</p>
+                  <p className="text-xs text-gray-500 capitalize">Active</p>
                 </div>
               </div>
             </div>
@@ -122,21 +122,6 @@ const SellerLayout = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
-          {user?.status !== 'approved' && (
-            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <FiSettings className="h-5 w-5 text-yellow-400" />
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-yellow-700">
-                    Your account is currently <span className="font-bold">{user?.status || 'pending'}</span>. 
-                    Some features may be restricted until you are approved by an admin.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
           <Outlet />
         </main>
       </div>

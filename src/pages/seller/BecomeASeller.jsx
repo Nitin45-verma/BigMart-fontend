@@ -96,6 +96,19 @@ const BecomeASeller = () => {
             </button>
           </div>
         </div>
+      ) : user?.sellerApplicationStatus === 'pending' ? (
+        <div className="text-center bg-yellow-50 border border-yellow-200 rounded-lg p-8">
+          <h2 className="text-xl font-semibold text-yellow-800 mb-3">Application Under Review</h2>
+          <p className="text-yellow-700 mb-5">
+            Your seller application is currently being reviewed by our team. We will notify you once it's approved.
+          </p>
+          <button
+            onClick={() => navigate('/account')}
+            className="px-6 py-3 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 font-medium"
+          >
+            Go to My Account
+          </button>
+        </div>
       ) : (
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-8">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Seller Application</h2>

@@ -167,7 +167,7 @@ const ProductForm = () => {
             <Link to="/seller/products" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 mr-3">
               Cancel
             </Link>
-            <button type="submit" disabled={submitting} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
+            <button type="submit" disabled={submitting} className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-900 bg-primary-600 hover:bg-primary-700 disabled:opacity-50">
               {submitting ? 'Saving...' : 'Save Product'}
             </button>
           </div>
