@@ -205,7 +205,7 @@ const BecomeASeller = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 font-medium disabled:opacity-60"
+                className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium disabled:opacity-60"
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Application'}
               </button>
