@@ -57,6 +57,10 @@ const Checkout = () => {
     }
   }, [dispatch, isAuthenticated]);
 
+  const selectedAddress = addresses.find(a => a._id === selectedAddressId);
+  const selectedAddressLat = selectedAddress?.latitude;
+  const selectedAddressLng = selectedAddress?.longitude;
+
   // When selected address changes, get shipping quote
   useEffect(() => {
     if (selectedAddressId && items.length > 0) {
@@ -64,7 +68,7 @@ const Checkout = () => {
     } else {
       dispatch(invalidateShippingQuote());
     }
-  }, [dispatch, selectedAddressId, items.length]);
+  }, [dispatch, selectedAddressId, items.length, selectedAddressLat, selectedAddressLng]);
 
   // Cart change invalidation
   useEffect(() => {
@@ -317,7 +321,23 @@ const Checkout = () => {
                   <p className="text-sm text-gray-500 text-center py-4">Please select a delivery address to view shipping options.</p>
                 ) : shippingError ? (
                   <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md text-sm">
-                    {shippingError}
+                    <p>{shippingError}</p>
+                    {shippingError.toLowerCase().includes('coordinates') && (
+                      <div className="mt-3 flex gap-4">
+                        <button 
+                          onClick={() => navigate('/account/addresses')}
+                          className="font-medium underline hover:text-red-900"
+                        >
+                          Update Address
+                        </button>
+                        <button 
+                          onClick={() => setShowAddressForm(true)}
+                          className="font-medium underline hover:text-red-900"
+                        >
+                          Add New Address
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : quote ? (
                   <div className="space-y-4">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiMapPin } from 'react-icons/fi';
 
 const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
   const [formData, setFormData] = useState({
@@ -13,8 +13,13 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
     postalCode: '',
     country: 'India',
     addressType: 'home',
-    isDefault: false
+    isDefault: false,
+    latitude: null,
+    longitude: null
   });
+
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState('');
 
   useEffect(() => {
     if (initialData) {
@@ -29,7 +34,9 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
         postalCode: initialData.postalCode || '',
         country: initialData.country || 'India',
         addressType: initialData.addressType || 'home',
-        isDefault: initialData.isDefault || false
+        isDefault: initialData.isDefault || false,
+        latitude: initialData.latitude || null,
+        longitude: initialData.longitude || null
       });
     }
   }, [initialData]);
@@ -40,6 +47,31 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+    
+    setIsLocating(true);
+    setLocationError('');
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setFormData(prev => ({
+          ...prev,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }));
+        setIsLocating(false);
+      },
+      (error) => {
+        setLocationError('Failed to get location. Please enable location permissions.');
+        setIsLocating(false);
+      }
+    );
   };
 
   const handleSubmit = (e) => {
@@ -190,7 +222,35 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
             </select>
           </div>
 
-          <div className="sm:col-span-1">
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Coordinates</label>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={handleGetLocation}
+                disabled={isLocating}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                <FiMapPin className="mr-2 -ml-1 h-5 w-5 text-gray-400" aria-hidden="true" />
+                {isLocating ? 'Locating...' : 'Use Current Location'}
+              </button>
+              {formData.latitude && formData.longitude && (
+                <span className="text-sm text-green-600 font-medium">
+                  ✓ Location captured for delivery
+                </span>
+              )}
+            </div>
+            {locationError && (
+              <p className="mt-2 text-sm text-red-600">{locationError}</p>
+            )}
+            {!formData.latitude && (
+               <p className="mt-2 text-xs text-yellow-600">
+                  Please capture your location to enable distance-based delivery fee calculation at checkout.
+               </p>
+            )}
+          </div>
+
+          <div className="sm:col-span-1 mt-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">Address Type</label>
             <div className="flex gap-4">
               <label className="inline-flex items-center">
