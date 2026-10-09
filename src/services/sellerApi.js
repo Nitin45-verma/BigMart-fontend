@@ -46,7 +46,24 @@ const sellerApi = {
     const response = await api.delete(`/seller/products/${productId}`);
     return response.data;
   },
-  
+
+  // Product Images
+  uploadProductImage: async (productId, formData, onUploadProgress) => {
+    const response = await api.post(`/seller/products/${productId}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress
+    });
+    return response.data;
+  },
+  deleteProductImage: async (productId, fileId) => {
+    const response = await api.delete(`/seller/products/${productId}/images/${fileId}`);
+    return response.data;
+  },
+  reorderProductImages: async (productId, imageIds) => {
+    const response = await api.patch(`/seller/products/${productId}/images/reorder`, { imageIds });
+    return response.data;
+  },
+
   // Orders & Fulfillments
   getOrders: async (params) => {
     const response = await api.get('/seller/dashboard/orders', { params });

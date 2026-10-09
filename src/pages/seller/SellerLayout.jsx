@@ -121,6 +121,15 @@ const SellerLayout = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Unapproved seller banner */}
+        {user?.status !== 'approved' && user?.sellerStatus !== 'approved' && (
+          <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
+            <p className="text-sm text-amber-800">
+              <strong>Account under review:</strong> Your seller account is pending verification.
+              You can set up your products, but they will only go live after admin approval.
+            </p>
+          </div>
+        )}
         <main className="flex-1 overflow-y-auto bg-gray-100 p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>

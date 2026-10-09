@@ -82,7 +82,7 @@ const ProductCard = ({ product }) => {
       <div className="p-4 flex flex-col flex-grow">
         <div className="text-xs text-gray-500 mb-1">{product.brand}</div>
         <Link to={`/products/${product.slug}`}>
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-primary-600 h-10">
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-blue-600 h-10">
             {product.name}
           </h3>
         </Link>
@@ -97,9 +97,9 @@ const ProductCard = ({ product }) => {
         </div>
 
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-gray-900">₹{product.sellingPrice}</span>
-          {product.originalPrice > product.sellingPrice && (
-            <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
+          <span className="text-lg font-bold text-gray-900">₹{product.price}</span>
+          {product.compareAtPrice > product.price && (
+            <span className="text-sm text-gray-500 line-through">₹{product.compareAtPrice}</span>
           )}
         </div>
         
@@ -112,7 +112,7 @@ const ProductCard = ({ product }) => {
             disabled={addingToCart || product.stock <= 0}
             className={`w-full flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
               product.stock > 0 
-                ? 'bg-primary-50 text-primary-700 hover:bg-primary-600 hover:text-white' 
+                ? 'bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white' 
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'
             }`}
           >
