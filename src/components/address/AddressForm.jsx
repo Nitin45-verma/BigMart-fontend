@@ -68,7 +68,11 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
         setIsLocating(false);
       },
       (error) => {
-        setLocationError('Failed to get location. Please enable location permissions.');
+        let msg = 'Failed to get location. Please enable location permissions and try again.';
+        if (error.code === 1) msg = 'Location access denied. Please enable location permissions in your browser settings and try again.';
+        if (error.code === 2) msg = 'Location unavailable. Please check your network or GPS and try again.';
+        if (error.code === 3) msg = 'Location request timed out. Please try again.';
+        setLocationError(msg);
         setIsLocating(false);
       }
     );
@@ -76,6 +80,10 @@ const AddressForm = ({ initialData, onSubmit, onCancel, isSaving, error }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.latitude || !formData.longitude) {
+      setLocationError('Delivery coordinates are required. Please use the "Use Current Location" button before saving.');
+      return;
+    }
     onSubmit(formData);
   };
 

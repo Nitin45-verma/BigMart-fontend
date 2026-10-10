@@ -61,15 +61,12 @@ const addressSlice = createSlice({
       })
       .addCase(createAddress.fulfilled, (state, action) => {
         state.saving = false;
-        // If this is the only address, make it selected
-        if (state.addresses.length === 0) {
-          state.selectedAddressId = action.payload._id;
-        }
+        // Automatically select the newly created address for checkout
+        state.selectedAddressId = action.payload._id;
         
         // If backend returned it as default, we must unset others
         if (action.payload.isDefault) {
           state.addresses.forEach(a => { a.isDefault = false; });
-          state.selectedAddressId = action.payload._id;
         }
         
         state.addresses.push(action.payload);

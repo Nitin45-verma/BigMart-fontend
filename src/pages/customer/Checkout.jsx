@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { fetchCart } from '../../features/cart/cartThunks';
-import { selectCheckoutAddress } from '../../features/address/addressSlice';
+import { selectCheckoutAddress, clearAddressError } from '../../features/address/addressSlice';
 import { getShippingQuote } from '../../features/shipping/shippingThunks';
 import { invalidateShippingQuote } from '../../features/shipping/shippingSlice';
 import { validateCoupon } from '../../features/coupon/couponThunks';
@@ -24,7 +24,7 @@ const Checkout = () => {
   
   const { user, isAuthenticated, isInitializing } = useSelector((state) => state.auth);
   const { items, cartTotal, loading: cartLoading } = useSelector((state) => state.cart);
-  const { addresses, selectedAddressId, loading: addressLoading, error: addressError } = useSelector((state) => state.address);
+  const { addresses, selectedAddressId, loading: addressLoading, error: addressError, saving: addressSaving } = useSelector((state) => state.address);
   const { quote, error: shippingError } = useSelector((state) => state.shipping);
   const { appliedCoupon } = useSelector((state) => state.coupon);
   
@@ -279,7 +279,12 @@ const Checkout = () => {
                 ) : showAddressForm ? (
                   <AddressForm 
                     onSubmit={handleAddressSubmit} 
-                    onCancel={() => setShowAddressForm(false)} 
+                    onCancel={() => {
+                      dispatch(clearAddressError());
+                      setShowAddressForm(false);
+                    }}
+                    isSaving={addressSaving}
+                    error={addressError}
                   />
                 ) : addresses.length === 0 ? (
                   <div className="text-center py-6">
