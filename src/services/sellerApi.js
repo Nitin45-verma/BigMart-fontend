@@ -14,6 +14,10 @@ const sellerApi = {
     const response = await api.get('/seller/dashboard/profile');
     return response.data;
   },
+  updateProfile: async (data) => {
+    const response = await api.patch('/seller/dashboard/profile', data);
+    return response.data;
+  },
   
   // Analytics
   getAnalyticsOverview: async () => {

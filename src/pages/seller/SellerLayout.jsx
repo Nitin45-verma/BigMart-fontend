@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { forceLogout } from '../../features/auth/authSlice';
 import { 
   FiHome, FiBox, FiList, FiDollarSign, FiPieChart, 
-  FiSettings, FiMenu, FiX, FiLogOut, FiUser 
+  FiSettings, FiMenu, FiX, FiLogOut, FiUser, FiMapPin, FiAlertCircle 
 } from 'react-icons/fi';
+import sellerApi from '../../services/sellerApi';
 
 const SellerLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -21,7 +22,28 @@ const SellerLayout = () => {
     { name: 'Orders', href: '/seller/orders', icon: FiList },
     { name: 'Earnings & Wallet', href: '/seller/wallet', icon: FiDollarSign },
     { name: 'Analytics', href: '/seller/analytics', icon: FiPieChart },
+    { name: 'Store Profile & Location', href: '/seller/profile', icon: FiMapPin },
   ];
+
+  const [sellerProfile, setSellerProfile] = useState(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    sellerApi.getProfile()
+      .then(res => {
+        if (isMounted) {
+          setSellerProfile(res.data);
+          setProfileLoaded(true);
+        }
+      })
+      .catch(() => {
+        if (isMounted) setProfileLoaded(true);
+      });
+    return () => { isMounted = false; };
+  }, [location.pathname]);
+
+  const hasMissingCoords = profileLoaded && sellerProfile && (sellerProfile.latitude === null || sellerProfile.longitude === null);
 
   const handleLogout = () => {
     dispatch(forceLogout());
@@ -121,6 +143,23 @@ const SellerLayout = () => {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Missing location coordinates banner */}
+        {hasMissingCoords && (
+          <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-red-800">
+              <FiAlertCircle className="w-5 h-5 flex-shrink-0 text-red-600" />
+              <span>
+                <strong>Store Location Required:</strong> Your business location coordinates are missing. Customers cannot calculate delivery fees or complete checkout for your products.
+              </span>
+            </div>
+            <Link
+              to="/seller/profile"
+              className="ml-4 whitespace-nowrap text-sm font-semibold text-red-700 underline hover:text-red-900"
+            >
+              Configure Location &rarr;
+            </Link>
+          </div>
+        )}
         {/* Unapproved seller banner */}
         {user?.status !== 'approved' && user?.sellerStatus !== 'approved' && (
           <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">

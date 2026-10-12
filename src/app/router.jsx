@@ -33,6 +33,7 @@ import SellerOrderDetails from '../pages/seller/OrderDetails';
 import SellerInventory from '../pages/seller/Inventory';
 import SellerAnalytics from '../pages/seller/Analytics';
 import SellerWallet from '../pages/seller/Wallet';
+import SellerProfile from '../pages/seller/SellerProfile';
 import BecomeASeller from '../pages/seller/BecomeASeller';
 
 import AdminLayout from '../pages/admin/AdminLayout';
@@ -144,6 +145,8 @@ export const router = createBrowserRouter([
       { path: 'orders/:orderId', element: <SellerOrderDetails /> },
       { path: 'wallet', element: <SellerWallet /> },
       { path: 'analytics', element: <SellerAnalytics /> },
+      { path: 'profile', element: <SellerProfile /> },
+      { path: 'settings', element: <SellerProfile /> },
     ],
   },
   // Admin Routes — requires authenticated admin role

@@ -117,6 +117,11 @@ const Checkout = () => {
       return;
     }
     
+    if (!quote) {
+      addToast('A valid shipping quote is required before proceeding to payment', 'error');
+      return;
+    }
+    
     try {
       const orderPayload = {
         addressId: selectedAddressId,
@@ -325,25 +330,54 @@ const Checkout = () => {
                 {!selectedAddressId ? (
                   <p className="text-sm text-gray-500 text-center py-4">Please select a delivery address to view shipping options.</p>
                 ) : shippingError ? (
-                  <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md text-sm">
-                    <p>{shippingError}</p>
-                    {shippingError.toLowerCase().includes('coordinates') && (
-                      <div className="mt-3 flex gap-4">
-                        <button 
-                          onClick={() => navigate('/account/addresses')}
-                          className="font-medium underline hover:text-red-900"
-                        >
-                          Update Address
-                        </button>
-                        <button 
-                          onClick={() => setShowAddressForm(true)}
-                          className="font-medium underline hover:text-red-900"
-                        >
-                          Add New Address
-                        </button>
+                  shippingError.toLowerCase().includes('seller') ? (
+                    <div className="bg-amber-50 border border-amber-300 text-amber-900 p-4 rounded-md text-sm">
+                      <div className="flex items-start gap-3">
+                        <FiAlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div className="space-y-1">
+                          <p className="font-semibold text-amber-900">Seller Location Required</p>
+                          <p className="text-amber-800">{shippingError}</p>
+                          <p className="text-xs text-amber-700">
+                            The seller has not yet configured their store dispatch location coordinates. Automated shipping fee calculation cannot proceed until the seller updates their business location.
+                          </p>
+                          {user?.role === 'seller' ? (
+                            <div className="pt-2">
+                              <button 
+                                onClick={() => navigate('/seller/profile')}
+                                className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                              >
+                                Update Store Business Location &rarr;
+                              </button>
+                            </div>
+                          ) : (
+                            <p className="text-xs text-gray-500 italic pt-1">
+                              Payment remains disabled until shipping can be calculated. You may contact support or remove products from this seller to proceed.
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  ) : (
+                    <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-md text-sm">
+                      <p>{shippingError}</p>
+                      {shippingError.toLowerCase().includes('coordinates') && (
+                        <div className="mt-3 flex gap-4">
+                          <button 
+                            onClick={() => navigate('/account/addresses')}
+                            className="font-medium underline hover:text-red-900"
+                          >
+                            Update Delivery Address
+                          </button>
+                          <button 
+                            onClick={() => setShowAddressForm(true)}
+                            className="font-medium underline hover:text-red-900"
+                          >
+                            Add New Address
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )
                 ) : quote ? (
                   <div className="space-y-4">
                     <p className="text-sm text-gray-700">

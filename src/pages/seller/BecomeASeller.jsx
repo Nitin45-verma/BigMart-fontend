@@ -20,8 +20,13 @@ const BecomeASeller = () => {
     state: '',
     postalCode: '',
     businessDescription: '',
+    latitude: '',
+    longitude: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+  const [isGeocoding, setIsGeocoding] = useState(false);
+  const [locationNote, setLocationNote] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -245,6 +250,89 @@ const BecomeASeller = () => {
                   maxLength={6}
                 />
               </div>
+            </div>
+
+            {/* Location Coordinates & Geocoding */}
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-900">Store Dispatch Coordinates (Optional during application)</span>
+                <span className="text-xs text-gray-500">Can also be configured after approval</span>
+              </div>
+              <p className="text-xs text-gray-600">
+                Helps calculate accurate delivery fees for customers. You can detect your location or geocode it from your business address.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={isLocating || isGeocoding}
+                  onClick={() => {
+                    if (!navigator.geolocation) {
+                      setLocationNote('Geolocation is not supported by your browser.');
+                      return;
+                    }
+                    setIsLocating(true);
+                    setLocationNote('');
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => {
+                        const lat = Number(pos.coords.latitude.toFixed(6));
+                        const lon = Number(pos.coords.longitude.toFixed(6));
+                        setFormData(prev => ({ ...prev, latitude: lat, longitude: lon }));
+                        setLocationNote(`Coordinates captured: ${lat}, ${lon}`);
+                        setIsLocating(false);
+                      },
+                      (err) => {
+                        setLocationNote('Could not retrieve device location. You can geocode from address.');
+                        setIsLocating(false);
+                      }
+                    );
+                  }}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                >
+                  {isLocating ? 'Detecting...' : '📍 Use Current Location'}
+                </button>
+                <button
+                  type="button"
+                  disabled={isLocating || isGeocoding}
+                  onClick={async () => {
+                    if (!formData.city && !formData.postalCode) {
+                      setLocationNote('Please enter city or postal code first.');
+                      return;
+                    }
+                    setIsGeocoding(true);
+                    setLocationNote('');
+                    const query = `${formData.postalCode || ''} ${formData.city || ''} ${formData.state || ''} India`.trim();
+                    try {
+                      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`, {
+                        headers: { 'User-Agent': 'BigMart-Seller-Apply/1.0' }
+                      });
+                      const data = await res.json();
+                      if (data && data.length > 0) {
+                        const lat = Number(parseFloat(data[0].lat).toFixed(6));
+                        const lon = Number(parseFloat(data[0].lon).toFixed(6));
+                        setFormData(prev => ({ ...prev, latitude: lat, longitude: lon }));
+                        setLocationNote(`Geocoded: ${lat}, ${lon}`);
+                      } else {
+                        setLocationNote('Address not found in geocoder.');
+                      }
+                    } catch (e) {
+                      setLocationNote('Geocoding service unavailable.');
+                    } finally {
+                      setIsGeocoding(false);
+                    }
+                  }}
+                  className="px-3 py-1.5 text-xs font-medium rounded border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+                >
+                  {isGeocoding ? 'Geocoding...' : '🔍 Geocode from Address'}
+                </button>
+              </div>
+              {locationNote && (
+                <p className="text-xs text-blue-600">{locationNote}</p>
+              )}
+              {formData.latitude && formData.longitude && (
+                <p className="text-xs text-green-700 font-medium">
+                  ✓ Coordinates set: {formData.latitude}, {formData.longitude}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
