@@ -32,10 +32,24 @@ const Orders = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'delivered': return 'bg-green-100 text-green-800';
+      case 'paid':
       case 'processing': return 'bg-blue-100 text-blue-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
-      case 'shipped': return 'bg-indigo-100 text-indigo-800';
+      case 'shipped':
+      case 'out_of_delivery': return 'bg-indigo-100 text-indigo-800';
+      case 'pending_payment': return 'bg-yellow-100 text-yellow-800';
       default: return 'bg-yellow-100 text-yellow-800';
+    }
+  };
+
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case 'paid': return 'bg-green-100 text-green-800';
+      case 'pending':
+      case 'created': return 'bg-yellow-100 text-yellow-800';
+      case 'failed': return 'bg-red-100 text-red-800';
+      case 'refunded': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -87,7 +101,8 @@ const Orders = () => {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Your Subtotal</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Status</th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment</th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
@@ -108,7 +123,12 @@ const Orders = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getStatusColor(order.orderStatus)}`}>
-                        {order.orderStatus?.replace('_', ' ') ?? 'unknown'}
+                        {(order.orderStatus || 'unknown').replace(/_/g, ' ')}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full capitalize ${getPaymentStatusColor(order.paymentStatus)}`}>
+                        {(order.paymentStatus || 'created').replace(/_/g, ' ')}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
