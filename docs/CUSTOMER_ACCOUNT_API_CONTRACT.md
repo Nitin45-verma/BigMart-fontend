@@ -13,7 +13,7 @@
   ```
 - **PATCH Request Body**:
   ```json
-  { "name": "...", "phone": "..." }
+  { "name": "....", "phone": "...." }
   ```
 
 ## 2. Addresses Endpoints (Reused from Step 6)
