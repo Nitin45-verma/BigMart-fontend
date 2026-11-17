@@ -52,7 +52,8 @@ const Login = () => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
+    const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1';
+    window.location.href = `${apiBase}/auth/google`;
   };
 
   /* Error display — friendly labels */
