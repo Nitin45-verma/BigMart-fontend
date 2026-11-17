@@ -55,7 +55,9 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    const apiBase = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1';
+    const rawBase = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1';
+    const trimmedBase = rawBase.trim().replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
+    const apiBase = trimmedBase.endsWith('/api/v1') ? trimmedBase : `${trimmedBase}/api/v1`;
     window.location.href = `${apiBase}/auth/google`;
   };
 

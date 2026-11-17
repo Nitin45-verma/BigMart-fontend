@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+// Sanitize base URL: strip duplicate slashes and ensure proper /api/v1 ending
+const rawBaseURL = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1';
+const trimmedBase = rawBaseURL.trim().replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
+const baseURL = trimmedBase.endsWith('/api/v1') ? trimmedBase : `${trimmedBase}/api/v1`;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,6 +16,10 @@ const api = axios.create({
 export const setupInterceptors = (store) => {
   api.interceptors.request.use(
     (config) => {
+      // Normalize relative URL if it starts with duplicate slashes
+      if (config.url && config.url.startsWith('//')) {
+        config.url = config.url.replace(/^\/+/, '/');
+      }
       const token = localStorage.getItem('token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
