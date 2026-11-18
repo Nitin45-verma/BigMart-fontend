@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Sanitize base URL: strip duplicate slashes and ensure proper /api/v1 ending
-const rawBaseURL = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-7upr.onrender.com/api/v1';
+const rawBaseURL = import.meta.env.VITE_API_BASE_URL || 'https://bigmart-backend.onrender.com/api/v1';
 const trimmedBase = rawBaseURL.trim().replace(/([^:]\/)\/+/g, '$1').replace(/\/+$/, '');
 const baseURL = trimmedBase.endsWith('/api/v1') ? trimmedBase : `${trimmedBase}/api/v1`;
 
